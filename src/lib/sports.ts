@@ -87,6 +87,15 @@ const getSportsResourceData = async (
         }
     }
 
+    // Step five: update field token
+    const p5 = /resourcesm.put\('(.*?)', '(.*?)'\);/g;
+    for (let r5 = p5.exec(rawHtml); r5 != null; r5 = p5.exec(rawHtml)) {
+        if (result[r5[1]] !== undefined) {
+            result[r5[1]].fieldToken = r5[2];
+        }
+    }
+
+
     return Object.keys(result).map(key => result[key]);
 };
 
@@ -142,7 +151,7 @@ export const makeSportsReservation = async (
     itemId: string,
     date: string,  // yyyy-MM-dd
     captcha: string,
-    fieldId: string,
+    fieldToken: string,
 ): Promise<string | undefined> => {
     if (helper.mocked()) {
         return undefined;
@@ -159,7 +168,7 @@ export const makeSportsReservation = async (
         "putongRes": "putongRes",
         "code": captcha,
         "selectedPayWay": 1,
-        "allFieldTime": `${fieldId}#${date}`,
+        "allFieldTime": `${fieldToken}#${date}`,
     }).then(JSON.parse);
     if (orderResult.msg !== "预定成功") {
         throw new SportsError(orderResult.msg);
@@ -172,10 +181,10 @@ export const makeSportsReservation = async (
         item_idForCache: itemId,
         time_dateForCache: date,
         userTypeNumForCache: 1,
-        allFieldTime: `${fieldId}#${date}`,
+        allFieldTime: `${fieldToken}#${date}`,
     }, 60000, "GBK").then((s) => cheerio.load(s)("form"));
     const paymentApiHtml = await uFetch(
-        paymentResultForm.attr().action,
+        paymentResultForm.attr().action, // TODO found a bug here: attr() returns undefined
         paymentResultForm.serialize() as never as object,
         60000,
         "UTF-8",

@@ -9,6 +9,7 @@ export interface SportsResource {
     locked?: boolean;         // a boolean
     userType?: string;        // a string representing the type of user of this resource, or `undefined` if the resource is not occupied
     paymentStatus?: boolean;  // a boolean representing whether the resource has been paid, or `undefined` if the resource is not occupied
+    fieldToken?: string;      // a string representing the token of the field, used when making reservations and paying
 }
 
 export interface SportsResourcesInfo {
