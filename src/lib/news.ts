@@ -115,11 +115,12 @@ export const searchNewsList = async (helper: InfoHelper, page: number, key: stri
 export const getNewsSubscriptionList = async (helper: InfoHelper):Promise<NewsSubscription[]> => {
     const json = await uFetch(`${NEWS_SUBSCRIPTION_LIST_URL}?_csrf=${await getCsrfToken()}`);
     // I think the pxz is the order of subscriptions
-    const data: { object: { id: string, fbdwmcList: string[], lmmcList: string[], pxz: number, titile: string }[] } = JSON.parse(json);
+    const data: { object: { id: string, fbdwmcList: string[], lmmcList: string[], pxz: number, titile: string, bt: string | null }[] } = JSON.parse(json);
     return data.object.map((i) => {
         return {
             channel: i.lmmcList?.[0],
             source: i.fbdwmcList?.[0],
+            keyword: i.bt ?? "",
             id: i.id,
             title: i.titile,
             order: i.pxz,
