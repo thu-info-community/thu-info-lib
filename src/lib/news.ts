@@ -149,12 +149,12 @@ export const getNewsChannelList = async (h: InfoHelper, needEnglish: boolean): P
     });
 };
 
-export const addNewsSubscription = async (h: InfoHelper, channelId?: ChannelTag, sourceId?: string): Promise<boolean> => {
+export const addNewsSubscription = async (h: InfoHelper, channelId?: ChannelTag, sourceId?: string, keyword?: string): Promise<boolean> => {
     if (!channelId && !sourceId)
         return false;
     const json = await uFetch(`${NEWS_ADD_SUBSCRIPTION_URL}?_csrf=${await getCsrfToken()}`,
         {
-            dygz: JSON.stringify({lmid: !channelId ? undefined : channelId, fbdwnm: !sourceId ? undefined : sourceId, bt: ""}),
+            dygz: JSON.stringify({lmid: !channelId ? undefined : channelId, fbdwnm: !sourceId ? undefined : sourceId, bt: keyword ?? ""}),
             mkid: "XXFB",
         });
     const data: { result: string } = JSON.parse(json);
