@@ -129,11 +129,11 @@ import {uFetch} from "./utils/network";
 import {getNetworkBalance, getNetworkDetail, getOnlineDevices} from "./lib/network";
 import {getScoreByCourseId} from "./lib/thos";
 import {
-    cardCancelLoss,
+    cardCancelLoss, cardChangeTransactionPassword,
     cardGetInfo,
     cardGetPhotoUrl,
     cardGetTransactions,
-    cardLogin,
+    cardLogin, cardModifyMaxTransactionAmount,
     cardRechargeFromBank, cardRechargeFromWechatAlipay,
     cardReportLoss,
 } from "./lib/card";
@@ -951,6 +951,11 @@ export class InfoHelper {
      */
     public getCampusCardTransactions = async (start: Date, end: Date, type: CardTransactionType) =>
         cardGetTransactions(this, start, end, type);
+
+    public changeCampusCardPassword = async (oldPassword: string, newPassword: string) => cardChangeTransactionPassword(this, oldPassword, newPassword);
+
+    public modifyCampusCardMaxTransactionAmount = async (transactionPassword: string, maxDailyAmount: number, maxOneTimeAmount: number) =>
+        cardModifyMaxTransactionAmount(this, transactionPassword, maxDailyAmount, maxOneTimeAmount);
 
     public reportCampusCardLoss = async (transactionPassword: string) => cardReportLoss(this, transactionPassword);
 

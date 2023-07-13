@@ -260,6 +260,8 @@ export const CARD_USER_BY_TOKEN_URL = "https://card.tsinghua.edu.cn/login/getUse
 export const CARD_INFO_BY_USER_URL = "https://card.tsinghua.edu.cn/business/getCardUserinfo";
 export const CARD_PHOTO_URL = "https://card.tsinghua.edu.cn/myaccount/showDbImage?idserial=";
 export const CARD_TRANSACTION_URL = "https://card.tsinghua.edu.cn/business/querySelfTradeList";
+export const CARD_CHANGE_PWD_URL = "https://card.tsinghua.edu.cn/business/modifyPwdByPhoneVerify";
+export const CARD_MOD_MAX_CONSUME_URL = "https://card.tsinghua.edu.cn/business/modifyCardMaxConsamt";
 export const CARD_REPORT_LOSS_URL = "https://card.tsinghua.edu.cn/business/cardReportLoss";
 export const CARD_CANCEL_LOSS_URL = "https://card.tsinghua.edu.cn/business/solutionHang";
 export const CARD_RECHARGE_FROM_BANK_URL = "https://card.tsinghua.edu.cn/business/moblieRecharge";

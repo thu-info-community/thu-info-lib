@@ -2,9 +2,9 @@ import {roam} from "./core";
 import {InfoHelper} from "../index";
 import {setCookie, uFetch} from "../utils/network";
 import {
-    CARD_CANCEL_LOSS_URL,
+    CARD_CANCEL_LOSS_URL, CARD_CHANGE_PWD_URL,
     CARD_INFO_BY_USER_URL,
-    CARD_LOGIN_URL,
+    CARD_LOGIN_URL, CARD_MOD_MAX_CONSUME_URL,
     CARD_PHOTO_URL, CARD_RECHARGE_FROM_BANK_URL, CARD_RECHARGE_FROM_WECHAT_ALIPAY_URL, CARD_REPORT_LOSS_URL,
     CARD_TRANSACTION_URL, CARD_USER_BY_TOKEN_URL,
     CONTENT_TYPE_JSON,
@@ -98,6 +98,41 @@ export const cardGetTransactions = async (
         balance: rawTransaction.balance / 100,
         amount: rawTransaction.txamt / 100,
     }));
+};
+
+export const cardChangeTransactionPassword = async (helper: InfoHelper, oldPassword: string, newPassword: string) => {
+    if (accountBaseInfo.user === "") {
+        await cardLogin(helper);
+    }
+
+    await fetchWithParse(CARD_CHANGE_PWD_URL,
+        {
+            idserial: accountBaseInfo.user,
+            oldpassword: oldPassword,
+            txpassword: newPassword,
+            authOldPwd: true,
+        });
+};
+
+export const cardModifyMaxTransactionAmount = async (
+    helper: InfoHelper,
+    transactionPassword: string,
+    maxDailyTranscationAmount: number,
+    maxOneTimeTranscationAmount: number) => {
+    if (accountBaseInfo.user === "") {
+        await cardLogin(helper);
+    }
+
+    if (accountBaseInfo.cardId === "") {
+        await cardGetInfo(helper);
+    }
+
+    await fetchWithParse(CARD_MOD_MAX_CONSUME_URL, {
+        maxconsamt: Math.floor(maxDailyTranscationAmount * 100),
+        maxconstolamt: Math.floor(maxOneTimeTranscationAmount * 100),
+        txpassword: transactionPassword,
+        cardid: accountBaseInfo.cardId,
+    });
 };
 
 export const cardReportLoss = async (helper: InfoHelper, transactionPassword: string) => {
