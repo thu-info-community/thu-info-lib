@@ -128,6 +128,16 @@ import {APP_STARTUP_STAT_URL, APP_USAGE_STAT_URL} from "./constants/strings";
 import {uFetch} from "./utils/network";
 import {getNetworkBalance, getNetworkDetail, getOnlineDevices} from "./lib/network";
 import {getScoreByCourseId} from "./lib/thos";
+import {
+    cardCancelLoss,
+    cardGetInfo,
+    cardGetPhotoUrl,
+    cardGetTransactions,
+    cardLogin,
+    cardRechargeFromBank, cardRechargeFromWechatAlipay,
+    cardReportLoss,
+} from "./lib/card";
+import {CardTransactionType} from "./models/card/transaction";
 
 export class InfoHelper {
     public userId = "";
@@ -925,6 +935,27 @@ export class InfoHelper {
     public getNetworkBalance = async () => getNetworkBalance(this);
 
     public getScoreByCourseId = async (courseId: string) => getScoreByCourseId(this, courseId);
+
+    public loginCampusCard = async () => cardLogin(this);
+
+    public getCampusCardInfo = async () => cardGetInfo(this);
+
+    public getCampusCardPhotoUrl = async () => cardGetPhotoUrl();
+
+    public getCampusCardTransactions = async (start: Date, end: Date, type: CardTransactionType) =>
+        cardGetTransactions(this, start, end, type);
+
+    public reportCampusCardLoss = async (transactionPassword: string) => cardReportLoss(this, transactionPassword);
+
+    public cancelCampusCardLoss = async (transactionPassword: string) => cardCancelLoss(this, transactionPassword);
+
+    public rechargeCampusCard = async (amount: number, transactionPassword: string, type: CardRechargeType) => {
+        if (type === CardRechargeType.Bank) {
+            return cardRechargeFromBank(this, transactionPassword, amount);
+        }
+
+        return cardRechargeFromWechatAlipay(this, amount, type === CardRechargeType.Alipay);
+    };
 }
 
 export class Water {
