@@ -1,4 +1,5 @@
 export const CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";
+export const CONTENT_TYPE_JSON = "application/json";
 export const USER_AGENT =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36";
 
@@ -260,6 +261,6 @@ export const CARD_INFO_BY_USER_URL = "https://card.tsinghua.edu.cn/business/getC
 export const CARD_PHOTO_URL = "https://card.tsinghua.edu.cn/myaccount/showDbImage?idserial=";
 export const CARD_TRANSACTION_URL = "https://card.tsinghua.edu.cn/business/querySelfTradeList";
 export const CARD_REPORT_LOSS_URL = "https://card.tsinghua.edu.cn/business/cardReportLoss";
-export const CARD_CANCEL_LOSS_URL = "https://card.tsinghua.edu.cn/business/cardCancelLoss";
+export const CARD_CANCEL_LOSS_URL = "https://card.tsinghua.edu.cn/business/solutionHang";
 export const CARD_RECHARGE_FROM_BANK_URL = "https://card.tsinghua.edu.cn/business/moblieRecharge";
 export const CARD_RECHARGE_FROM_WECHAT_ALIPAY_URL = "https://card.tsinghua.edu.cn/wx/rechard/qrcode";

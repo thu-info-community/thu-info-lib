@@ -1,6 +1,5 @@
 export interface CardTransaction {
     summary: string;
-    type: CardTransactionType;
     timestamp: Date;
     balance: number;
     amount: number;

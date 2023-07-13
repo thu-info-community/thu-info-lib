@@ -1,4 +1,4 @@
-const enum CardRechargeType {
+export enum CardRechargeType {
     Bank,
     Alipay,
     Wechat,

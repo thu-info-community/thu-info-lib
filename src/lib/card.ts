@@ -6,8 +6,8 @@ import {
     CARD_INFO_BY_USER_URL,
     CARD_LOGIN_URL,
     CARD_PHOTO_URL, CARD_RECHARGE_FROM_BANK_URL, CARD_RECHARGE_FROM_WECHAT_ALIPAY_URL, CARD_REPORT_LOSS_URL,
-    CARD_TRANSACTION_URL,
-    CARD_USER_BY_TOKEN_URL,
+    CARD_TRANSACTION_URL, CARD_USER_BY_TOKEN_URL,
+    CONTENT_TYPE_JSON,
 } from "../constants/strings";
 import {CardInfo} from "../models/card/info";
 import {CardTransaction, CardTransactionType} from "../models/card/transaction";
@@ -25,13 +25,18 @@ const parseResultData : any = (data: string) => {
     return result.resultData;
 };
 
+const fetchWithParse = async (url: string, jsonStruct: any = {}) => {
+    const response = await uFetch(url, JSON.stringify(jsonStruct) as any, undefined, undefined, true, CONTENT_TYPE_JSON);
+    return parseResultData(response);
+};
+
 export const cardLogin = async (helper: InfoHelper): Promise<string> => {
-    const redirectUrl = await roam(helper, "card", "051bb58cba58a1c5f67857606497387f");
+    const redirectUrl = await roam(helper, "card", "eea30cbedcaf97c69d28b2d92f22a259");
     const ticket = new RegExp(/ticket=(\w*?)$/).exec(redirectUrl)![1];
-    const token = parseResultData(await uFetch(CARD_LOGIN_URL, {ticket: ticket})).token;
+    const token = (await fetchWithParse(CARD_LOGIN_URL, {ticket: ticket})).token;
     setCookie("token", token);
     accountBaseInfo.user = parseResultData(await uFetch(CARD_USER_BY_TOKEN_URL)).loginuser;
-    return accountBaseInfo.user;
+    return token;
 };
 
 export const cardGetInfo = async (helper: InfoHelper): Promise<CardInfo> => {
@@ -39,7 +44,7 @@ export const cardGetInfo = async (helper: InfoHelper): Promise<CardInfo> => {
         await cardLogin(helper);
     }
 
-    const rawInfoStruct = parseResultData(await uFetch(CARD_INFO_BY_USER_URL), {idserial: accountBaseInfo.user});
+    const rawInfoStruct = await fetchWithParse(CARD_INFO_BY_USER_URL, {idserial: accountBaseInfo.user});
 
     const info: CardInfo = {
         userId: rawInfoStruct.idserial,
@@ -77,17 +82,18 @@ export const cardGetTransactions = async (
         await cardLogin(helper);
     }
 
-    const rawTransactionsData = parseResultData(await uFetch(CARD_TRANSACTION_URL),
+    const rawTransactionsData = await fetchWithParse(CARD_TRANSACTION_URL,
         {
             idserial: accountBaseInfo.user,
             starttime: start.toISOString().slice(0, 10),
             endtime: end.toISOString().slice(0, 10),
             tradetype: type,
+            pageSize: 10000,
+            pageNumber: 0,
         });
 
     return rawTransactionsData.rows.map((rawTransaction: any) => ({
         summary: rawTransaction.summary,
-        type: CardTransactionType.Any, // TODO: parse type
         timestamp: new Date(rawTransaction.txdate),
         balance: rawTransaction.balance / 100,
         amount: rawTransaction.txamt / 100,
@@ -99,7 +105,7 @@ export const cardReportLoss = async (helper: InfoHelper, transactionPassword: st
         await cardLogin(helper);
     }
 
-    parseResultData(await uFetch(CARD_REPORT_LOSS_URL),
+    await fetchWithParse(CARD_REPORT_LOSS_URL,
         {
             idserial: accountBaseInfo.user,
             txpasswd: transactionPassword,
@@ -111,7 +117,7 @@ export const cardCancelLoss = async (helper: InfoHelper, transactionPassword: st
         await cardLogin(helper);
     }
 
-    parseResultData(await uFetch(CARD_CANCEL_LOSS_URL),
+    await fetchWithParse(CARD_CANCEL_LOSS_URL,
         {
             idserial: accountBaseInfo.user,
             txpasswd: transactionPassword,
@@ -123,7 +129,7 @@ export const cardRechargeFromBank = async (helper: InfoHelper, transactionPasswo
         await cardLogin(helper);
     }
 
-    parseResultData(await uFetch(CARD_RECHARGE_FROM_BANK_URL),
+    await fetchWithParse(CARD_RECHARGE_FROM_BANK_URL,
         {
             idserial: accountBaseInfo.user,
             txamt: Math.floor(amount * 100),
@@ -141,7 +147,7 @@ export const cardRechargeFromWechatAlipay = async (helper: InfoHelper, amount: n
         await cardLogin(helper);
     }
 
-    const rawResponse = parseResultData(await uFetch(CARD_RECHARGE_FROM_WECHAT_ALIPAY_URL),
+    const rawResponse = await fetchWithParse(CARD_RECHARGE_FROM_WECHAT_ALIPAY_URL,
         {
             idserial: accountBaseInfo.user,
             transamt: amount,

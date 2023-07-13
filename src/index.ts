@@ -138,6 +138,7 @@ import {
     cardReportLoss,
 } from "./lib/card";
 import {CardTransactionType} from "./models/card/transaction";
+import {CardRechargeType} from "./models/card/recharge";
 
 export class InfoHelper {
     public userId = "";
@@ -942,6 +943,12 @@ export class InfoHelper {
 
     public getCampusCardPhotoUrl = async () => cardGetPhotoUrl();
 
+    /**
+     * Get the campus card transactions.
+     * @param start
+     * @param end
+     * @param type -1 for all (1-3), 1 for consumption, 2 for recharge, 3 for subsidy, 0 for ALL (?)
+     */
     public getCampusCardTransactions = async (start: Date, end: Date, type: CardTransactionType) =>
         cardGetTransactions(this, start, end, type);
 
@@ -949,6 +956,12 @@ export class InfoHelper {
 
     public cancelCampusCardLoss = async (transactionPassword: string) => cardCancelLoss(this, transactionPassword);
 
+    /**
+     * Recharge the campus card.
+     * @param amount in yuan
+     * @param transactionPassword
+     * @param type 0 for Bank Card, 1 for Alipay, 2 for Wechat Pay
+     */
     public rechargeCampusCard = async (amount: number, transactionPassword: string, type: CardRechargeType) => {
         if (type === CardRechargeType.Bank) {
             return cardRechargeFromBank(this, transactionPassword, amount);
