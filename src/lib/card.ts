@@ -17,17 +17,25 @@ const accountBaseInfo = {
     cardId: "",
 };
 
-const parseResultData : any = (data: string) => {
-    const result = JSON.parse(data);
-    if (result.success !== true) {
-        throw new Error(result.message);
-    }
-    return result.resultData;
-};
-
 const fetchWithParse = async (url: string, jsonStruct: any = {}) => {
     const response = await uFetch(url, JSON.stringify(jsonStruct) as any, undefined, undefined, true, CONTENT_TYPE_JSON);
-    return parseResultData(response);
+    const data = JSON.parse(response);
+    if (data.success !== true) {
+        throw new Error(data.message);
+    }
+
+    return data.resultData;
+};
+
+const assureLoginValid = async (helper: InfoHelper) => {
+    try {
+        if ((await fetchWithParse(CARD_USER_BY_TOKEN_URL)).loginuser !== accountBaseInfo.user) {
+            await cardLogin(helper);
+        }
+    }
+    catch {
+        await cardLogin(helper);
+    }
 };
 
 export const cardLogin = async (helper: InfoHelper): Promise<string> => {
@@ -35,14 +43,12 @@ export const cardLogin = async (helper: InfoHelper): Promise<string> => {
     const ticket = new RegExp(/ticket=(\w*?)$/).exec(redirectUrl)![1];
     const token = (await fetchWithParse(CARD_LOGIN_URL, {ticket: ticket})).token;
     setCookie("token", token);
-    accountBaseInfo.user = parseResultData(await uFetch(CARD_USER_BY_TOKEN_URL)).loginuser;
+    accountBaseInfo.user = (await fetchWithParse(CARD_USER_BY_TOKEN_URL)).loginuser;
     return token;
 };
 
 export const cardGetInfo = async (helper: InfoHelper): Promise<CardInfo> => {
-    if (accountBaseInfo.user === "") {
-        await cardLogin(helper);
-    }
+    await assureLoginValid(helper);
 
     const rawInfoStruct = await fetchWithParse(CARD_INFO_BY_USER_URL, {idserial: accountBaseInfo.user});
 
@@ -78,9 +84,7 @@ export const cardGetTransactions = async (
     end: Date,
     type: CardTransactionType = CardTransactionType.Any)
     : Promise<CardTransaction[]> => {
-    if (accountBaseInfo.user === "") {
-        await cardLogin(helper);
-    }
+    await assureLoginValid(helper);
 
     const rawTransactionsData = await fetchWithParse(CARD_TRANSACTION_URL,
         {
@@ -101,9 +105,7 @@ export const cardGetTransactions = async (
 };
 
 export const cardChangeTransactionPassword = async (helper: InfoHelper, oldPassword: string, newPassword: string) => {
-    if (accountBaseInfo.user === "") {
-        await cardLogin(helper);
-    }
+    await assureLoginValid(helper);
 
     await fetchWithParse(CARD_CHANGE_PWD_URL,
         {
@@ -119,9 +121,7 @@ export const cardModifyMaxTransactionAmount = async (
     transactionPassword: string,
     maxDailyTranscationAmount: number,
     maxOneTimeTranscationAmount: number) => {
-    if (accountBaseInfo.user === "") {
-        await cardLogin(helper);
-    }
+    await assureLoginValid(helper);
 
     if (accountBaseInfo.cardId === "") {
         await cardGetInfo(helper);
@@ -136,9 +136,7 @@ export const cardModifyMaxTransactionAmount = async (
 };
 
 export const cardReportLoss = async (helper: InfoHelper, transactionPassword: string) => {
-    if (accountBaseInfo.user === "") {
-        await cardLogin(helper);
-    }
+    await assureLoginValid(helper);
 
     await fetchWithParse(CARD_REPORT_LOSS_URL,
         {
@@ -148,9 +146,7 @@ export const cardReportLoss = async (helper: InfoHelper, transactionPassword: st
 };
 
 export const cardCancelLoss = async (helper: InfoHelper, transactionPassword: string) => {
-    if (accountBaseInfo.user === "") {
-        await cardLogin(helper);
-    }
+    await assureLoginValid(helper);
 
     await fetchWithParse(CARD_CANCEL_LOSS_URL,
         {
@@ -160,9 +156,7 @@ export const cardCancelLoss = async (helper: InfoHelper, transactionPassword: st
 };
 
 export const cardRechargeFromBank = async (helper: InfoHelper, transactionPassword: string, amount: number) => {
-    if (accountBaseInfo.user === "") {
-        await cardLogin(helper);
-    }
+    await assureLoginValid(helper);
 
     await fetchWithParse(CARD_RECHARGE_FROM_BANK_URL,
         {
@@ -178,9 +172,7 @@ const enum CardRechargeType {
 
 export const cardRechargeFromWechatAlipay = async (helper: InfoHelper, amount: number, alipay: boolean)
     : Promise<string> => {
-    if (accountBaseInfo.user === "") {
-        await cardLogin(helper);
-    }
+    await assureLoginValid(helper);
 
     const rawResponse = await fetchWithParse(CARD_RECHARGE_FROM_WECHAT_ALIPAY_URL,
         {
