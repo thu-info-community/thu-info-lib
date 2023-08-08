@@ -942,7 +942,6 @@ export class InfoHelper {
 
     /**
      * Recharge the campus card.
-     * NOTE: Wechat pay requires Referer eq "https://fa-online.tsinghua.edu.cn/"
      * @param amount in yuan
      * @param transactionPassword
      * @param type 0 for Bank Card, 1 for Alipay, 2 for Wechat Pay
