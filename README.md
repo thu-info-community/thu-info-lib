@@ -1,5 +1,7 @@
 # thu-info-lib
 
+**DEPRECATION NOTICE: `thu-info-lib` has been migrated to [thu-info monorepo](https://github.com/thu-info-community/thu-info-app/tree/HEAD/packages/thu-info-lib)**
+
 [![Build Status](https://github.com/thu-info-community/thu-info-lib/workflows/Test%20and%20Publish/badge.svg)](https://github.com/thu-info-community/thu-info-lib/actions?query=workflow%3A%22Test+and+Publish%22)
 [![NPM Version](https://img.shields.io/npm/v/thu-info-lib)](https://www.npmjs.com/package/thu-info-lib)
 
